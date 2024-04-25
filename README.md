@@ -1,0 +1,1 @@
+# StaticDotNet.SourceGenerators.Enumerations
