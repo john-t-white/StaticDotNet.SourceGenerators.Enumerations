@@ -1,0 +1,13 @@
+﻿<Project>
+
+	<PropertyGroup>
+		<Version>1.0.0</Version>
+		<Authors>John T. White</Authors>
+
+		<AnalysisMode>All</AnalysisMode>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<AnalysisLevel>latest-all</AnalysisLevel>
+	</PropertyGroup>
+
+</Project>

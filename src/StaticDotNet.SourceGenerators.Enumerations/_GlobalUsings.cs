@@ -1,0 +1,9 @@
+﻿global using Microsoft.CodeAnalysis;
+global using Microsoft.CodeAnalysis.CSharp;
+global using Microsoft.CodeAnalysis.CSharp.Syntax;
+global using Microsoft.CodeAnalysis.Text;
+global using StaticDotNet.SourceGenerators.Enumerations.Descriptors;
+global using StaticDotNet.SourceGenerators.Enumerations.Extensions;
+global using StaticDotNet.SourceGenerators.Enumerations.Infrastructure;
+global using System.Collections.Immutable;
+global using System.Text;

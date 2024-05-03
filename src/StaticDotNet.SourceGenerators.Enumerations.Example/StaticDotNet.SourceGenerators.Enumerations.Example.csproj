@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net7.0;net8.0</TargetFrameworks>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'netstandard2.1'">
+	  <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\StaticDotNet.SourceGenerators.Enumerations.Attributes\StaticDotNet.SourceGenerators.Enumerations.Attributes.csproj" />
+		<ProjectReference Include="..\StaticDotNet.SourceGenerators.Enumerations\StaticDotNet.SourceGenerators.Enumerations.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+	</ItemGroup>
+
+</Project>
