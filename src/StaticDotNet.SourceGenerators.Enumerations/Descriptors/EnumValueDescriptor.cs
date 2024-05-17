@@ -2,8 +2,7 @@
 
 namespace StaticDotNet.SourceGenerators.Enumerations.Descriptors;
 
-//public sealed record EnumValueDescriptor( string Name, DisplayAttributeDescriptor? DisplayAttribute, EquatableArray<EnumPropertyValueAttributeDescriptor> EnumPropertyValueAttributes ) {
-public sealed record EnumValueDescriptor( string Name, object Value, DisplayAttributeDescriptor? DisplayAttribute, EquatableArray<EnumPropertyValueAttributeDescriptor> EnumPropertyValueAttributes ) {
+public readonly record struct EnumValueDescriptor( string Name, object Value, DisplayAttributeDescriptor? DisplayAttribute, EquatableArray<EnumPropertyValueAttributeDescriptor> EnumPropertyValueAttributes ) {
 
 	public static EnumValueDescriptor FromFieldSymbol( IFieldSymbol fieldSymbol ) {
 

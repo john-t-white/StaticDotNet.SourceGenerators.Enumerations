@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace StaticDotNet.SourceGenerators.Enumerations.Example {
 
 	[GenerateEnumExtensions]
 
 #if NETSTANDARD2_0_OR_GREATER || NET6_0
+	[EnumProperty( typeof( byte ), "valueAsByte")]
 	[EnumProperty( typeof( byte ), "ValueAsByte")]
 #else
 	[EnumProperty<byte>( "ValueAsByte")]

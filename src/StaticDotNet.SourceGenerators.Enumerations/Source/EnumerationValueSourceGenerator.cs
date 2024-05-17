@@ -1,13 +1,11 @@
 ﻿namespace StaticDotNet.SourceGenerators.Enumerations.Source;
 
-public static class EnumValueSourceGenerator {
+public static class EnumerationValueSourceGenerator {
 
 	public static string Generate( in EnumDescriptor enumDescriptor )
-		=> enumDescriptor is null
-			? throw new ArgumentNullException( nameof( enumDescriptor ) )
-			: enumDescriptor.LanguageVersion >= LanguageVersion.CSharp10
-				? GenerateCSharp10OrHigher( in enumDescriptor )
-				: GenerateBasic( in enumDescriptor );
+		=> enumDescriptor.LanguageVersion >= LanguageVersion.CSharp10
+			? GenerateCSharp10OrHigher( in enumDescriptor )
+			: GenerateBasic( in enumDescriptor );
 
 	private static string GenerateCSharp10OrHigher( in EnumDescriptor enumDescriptor ) {
 
@@ -21,15 +19,21 @@ public static class EnumValueSourceGenerator {
 		}
 
 		_ = sourceCodeStringBuilder.Append( $$"""
+			#nullable enable
+
 			[ExcludeFromCodeCoverage]
-			{{enumDescriptor.Accessibility}} sealed record {{enumDescriptor.Name}}EnumValue( {{enumDescriptor.Name}} Value, string Name, {{enumDescriptor.UnderlyingType}} UnderlyingValue, string DisplayName, string DisplayShortName
+			{{enumDescriptor.Accessibility}} sealed record {{enumDescriptor.Name}}Value( {{enumDescriptor.Name}} Value, string Name, {{enumDescriptor.UnderlyingType}} UnderlyingValue, string DisplayName, string DisplayShortName
 			""" );
 
 		foreach( EnumPropertyAttributeDescriptor currentEnumPropertyAttribute in enumDescriptor.EnumPropertyAttributes ) {
-			_ = sourceCodeStringBuilder.Append( $", {currentEnumPropertyAttribute.Type} {currentEnumPropertyAttribute.Name}" );
+			_ = sourceCodeStringBuilder.Append( $", {currentEnumPropertyAttribute.Type.ToDisplayString()} {currentEnumPropertyAttribute.Name}" );
 		}
 
-		_ = sourceCodeStringBuilder.AppendLine( " );" );
+		_ = sourceCodeStringBuilder.AppendLine( $$"""
+			 );
+
+			#nullable disable
+			""" );
 
 		return sourceCodeStringBuilder.ToString();
 	}
@@ -45,15 +49,19 @@ public static class EnumValueSourceGenerator {
 			_ = sourceCodeStringBuilder.AppendLine( $"namespace {enumDescriptor.Namespace} {{\r\n" );
 		}
 
+		if( enumDescriptor.LanguageVersion >= LanguageVersion.CSharp8 ) {
+			_ = sourceCodeStringBuilder.AppendLine( "#nullable enable\r\n" );
+		}
+
 		_ = sourceCodeStringBuilder.Append( $$"""
 				[ExcludeFromCodeCoverage]
-				{{enumDescriptor.Accessibility}} sealed class {{enumDescriptor.Name}}EnumValue {
+				{{enumDescriptor.Accessibility}} sealed class {{enumDescriptor.Name}}Value {
 
-					public {{enumDescriptor.Name}}EnumValue( {{enumDescriptor.Name}} value, string name, {{enumDescriptor.UnderlyingType}} underlyingValue, string displayName, string displayShortName
+					public {{enumDescriptor.Name}}Value( {{enumDescriptor.Name}} value, string name, {{enumDescriptor.UnderlyingType}} underlyingValue, string displayName, string displayShortName
 			""" );
 
 		foreach( EnumPropertyAttributeDescriptor currentEnumPropertyAttribute in enumDescriptor.EnumPropertyAttributes ) {
-			_ = sourceCodeStringBuilder.Append( $", {currentEnumPropertyAttribute.Type} {currentEnumPropertyAttribute.Name.ToCamelCase()}" );
+			_ = sourceCodeStringBuilder.Append( $", {currentEnumPropertyAttribute.Type.ToDisplayString()} {currentEnumPropertyAttribute.Name.ToCamelCase()}" );
 		}
 
 		_ = sourceCodeStringBuilder.AppendLine( $$""" 
@@ -88,11 +96,15 @@ public static class EnumValueSourceGenerator {
 		foreach( EnumPropertyAttributeDescriptor currentEnumPropertyAttribute in enumDescriptor.EnumPropertyAttributes ) {
 			_ = sourceCodeStringBuilder.AppendLine()
 				.AppendLine( $$"""
-						public {{currentEnumPropertyAttribute.Type}} {{currentEnumPropertyAttribute.Name}} { get; }
+						public {{currentEnumPropertyAttribute.Type.ToDisplayString()}} {{currentEnumPropertyAttribute.Name}} { get; }
 				""" );
 		}
 
-		_ = sourceCodeStringBuilder.AppendLine( "	}" );
+		_ = sourceCodeStringBuilder.AppendLine( "}" );
+
+		if( enumDescriptor.LanguageVersion >= LanguageVersion.CSharp8 ) {
+			_ = sourceCodeStringBuilder.AppendLine( "\r\n#nullable disable" );
+		}
 
 		if( enumDescriptor.Namespace.Length > 0 ) {
 			_ = sourceCodeStringBuilder.AppendLine( "}" );

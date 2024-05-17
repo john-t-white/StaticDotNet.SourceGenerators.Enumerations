@@ -1,8 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿namespace StaticDotNet.SourceGenerators.Enumerations.Descriptors;
 
-namespace StaticDotNet.SourceGenerators.Enumerations.Descriptors;
-
-public sealed record EnumPropertyValueAttributeDescriptor( string Type, string Name, TypedConstant Value ) {
+public readonly record struct EnumPropertyValueAttributeDescriptor( INamedTypeSymbol Type, string Name, in TypedConstant Value, LocationDescriptor? Location ) {
 
 	public const string GenericAttributeTypeFullName = "StaticDotNet.SourceGenerators.Enumerations.EnumPropertyValueAttribute<>";
 	public const string AttributeTypeFullName = "StaticDotNet.SourceGenerators.Enumerations.EnumPropertyValueAttribute";
@@ -13,13 +11,12 @@ public sealed record EnumPropertyValueAttributeDescriptor( string Type, string N
 			throw new ArgumentNullException( nameof( attributeData ) );
 		}
 
+		INamedTypeSymbol type = attributeData.AttributeClass?.TypeArguments[0] as INamedTypeSymbol ?? throw new InvalidOperationException( "Type is unexpectedly null." );
 		string name = attributeData.ConstructorArguments[ 0 ].Value as string ?? throw new InvalidOperationException( "Name is unexpectedly null." );
 		TypedConstant value = attributeData.ConstructorArguments[ 1 ];
+		LocationDescriptor? location = LocationDescriptor.FromAttributeData( attributeData );
 
-		INamedTypeSymbol namedTypeSymbol = value.Type as INamedTypeSymbol ?? throw new InvalidOperationException( "Type is unexpectedly null." );
-		string type = namedTypeSymbol.ToDisplayString();
-
-		return new( type, name, value );
+		return new( type, name, value, location );
 	}
 
 	public static EnumPropertyValueAttributeDescriptor FromAttributeData( AttributeData attributeData ) {
@@ -28,12 +25,11 @@ public sealed record EnumPropertyValueAttributeDescriptor( string Type, string N
 			throw new ArgumentNullException( nameof( attributeData ) );
 		}
 
-		INamedTypeSymbol namedTypeSymbol = attributeData.ConstructorArguments[ 0 ].Value as INamedTypeSymbol ?? throw new InvalidOperationException( "Type is unexpectedly null." );
-
-		string type = namedTypeSymbol.ToDisplayString();
+		INamedTypeSymbol type = attributeData.ConstructorArguments[ 0 ].Value as INamedTypeSymbol ?? throw new InvalidOperationException( "Type is unexpectedly null." );
 		string name = attributeData.ConstructorArguments[ 1 ].Value as string ?? throw new InvalidOperationException( "Name is unexpectedly null." );
 		TypedConstant value = attributeData.ConstructorArguments[ 2 ];
+		LocationDescriptor? location = LocationDescriptor.FromAttributeData( attributeData );
 
-		return new( type, name, value );
+		return new( type, name, value, location );
 	}
 }
